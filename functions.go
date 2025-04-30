@@ -17,33 +17,17 @@ import (
 // handler para recibir la peticion del cliente
 func getTasks(c *gin.Context) {
 	//devolvemos el slice en formato json
-	stat := c.Query("status")
-	if strings.Compare(stat, "") != 0 {
-		var taskStatus = []Tasks{}
-		for _, sta := range TasksDB {
-			if strings.Compare(stat, sta.Status) == 0 {
-				taskStatus = append(taskStatus, sta)
-			}
-		}
-		if len(taskStatus) <= 0 {
-			c.IndentedJSON(http.StatusOK, 200)
-			return
-		}
-		c.IndentedJSON(http.StatusOK, taskStatus)
+	if len(TasksDB) <= 0 {
+		c.IndentedJSON(http.StatusAccepted, gin.H{
+			"Error message": "There isnt nothing in the slice",
+			"QuantyTask":    len(TasksDB),
+		},
+		)
 		return
-	} else {
-		if len(TasksDB) <= 0 {
-			c.IndentedJSON(http.StatusAccepted, gin.H{
-				"Error message": "There isnt nothing in the slice",
-				"QuantyTask":    len(TasksDB),
-			},
-			)
-			return
-		}
-		c.IndentedJSON(http.StatusAccepted, TasksDB)
 	}
-
+	c.IndentedJSON(http.StatusAccepted, TasksDB)
 }
+
 func postTasks(c *gin.Context) {
 	//variable de tipo Task para almecenar la data del peticion del cliente
 	var task Tasks
@@ -150,17 +134,26 @@ func deleteTaskById(c *gin.Context) {
 }
 
 // INTENTAR HACERLO CON UN ARRAY
-func getTaskByName(c *gin.Context) {
+func getTaskByNameAndStatus(c *gin.Context) {
 	title := c.Query("title")
-	var tasks = []Tasks{}
-	for _, tit := range TasksDB {
-		if tit.Title == title {
-			tasks = append(tasks, tit)
+	if len(title) >= 1 {
+		var tasksTitle = []Tasks{}
+		for _, tit := range TasksDB {
+			if strings.Compare(tit.Title, title) == 0 {
+				tasksTitle = append(tasksTitle, tit)
+			}
 		}
-	}
-	if len(tasks) <= 0 {
-		c.IndentedJSON(http.StatusOK, 200)
+		c.IndentedJSON(http.StatusOK, tasksTitle)
+		return
+	} else {
+		stat := c.Query("status")
+		var taskStatus = []Tasks{}
+		for _, sta := range TasksDB {
+			if strings.Compare(stat, sta.Status) == 0 {
+				taskStatus = append(taskStatus, sta)
+			}
+		}
+		c.IndentedJSON(http.StatusOK, taskStatus)
 		return
 	}
-	c.IndentedJSON(http.StatusAccepted, tasks)
 }

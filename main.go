@@ -27,7 +27,7 @@ func main() {
 	ru.GET("/api/tasks/:id", getTaskById)
 	ru.PUT("/api/tasks/:id", updateTaskById)
 	ru.DELETE("/api/tasks/:id", deleteTaskById)
-	ru.GET("/api/tasks/search", getTaskByName)
+	ru.GET("/api/tasks/search", getTaskByNameAndStatus)
 
 	//se ejecuta el servidor
 	ru.Run()
